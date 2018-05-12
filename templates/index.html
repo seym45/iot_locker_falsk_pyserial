@@ -1,0 +1,171 @@
+{% extends "layout.html" %} {%block body%}
+
+<head>
+  <link rel="shortcut icon" href="">
+
+  <style>
+    .red {
+      background-color: red;
+      /* Green */
+      border: none;
+      color: white;
+      padding-top: 20px;
+      padding-right: 20px;
+      padding-bottom: 20px;
+      padding-left: 20px;
+      border-style: solid;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 30px;
+      cursor: not-allowed;
+    }
+
+    .green {
+
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding-top: 20px;
+      padding-right: 20px;
+      padding-bottom: 20px;
+      padding-left: 20px;
+      border-style: solid;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 30px;
+    }
+
+    .yellow {
+      background-color: #FFFF00;
+      border: none;
+      color: white;
+      padding-top: 20px;
+      padding-right: 20px;
+      padding-bottom: 20px;
+      padding-left: 20px;
+      border-style: solid;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 30px;
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .blue {
+      background-color: #5050FF;
+      border: none;
+      color: white;
+      padding-top: 20px;
+      padding-right: 20px;
+      padding-bottom: 20px;
+      padding-left: 20px;
+      border-style: solid;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 30px;
+    }
+  </style>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+</head>
+
+
+<input id="A" type="button" class="green" name="Ignore Select" value="A" id="select" />
+<input id="B" type="button" class="green" name="Ignore Select" value="B" id="select" />
+<input id="C" type="button" class="green" name="Ignore Select" value="C" id="select" />
+<input id="D" type="button" class="green" name="Ignore Select" value="D" id="select" />
+<input id="E" type="button" class="green" name="Ignore Select" value="E" id="select" />
+<input id="F" type="button" class="green" name="Ignore Select" value="F" id="select" />
+<input id="G" type="button" class="green" name="Ignore Select" value="G" id="select" />
+<input id="H" type="button" class="green" name="Ignore Select" value="H" id="select" />
+<input id="I" type="button" class="green" name="Ignore Select" value="I" id="select" />
+<input id="J" type="button" class="green" name="Ignore Select" value="J" id="select" />
+<input id="K" type="button" class="green" name="Ignore Select" value="K" id="select" />
+<input id="L" type="button" class="green" name="Ignore Select" value="L" id="select" />
+<input id="M" type="button" class="green" name="Ignore Select" value="M" id="select" />
+<input id="N" type="button" class="green" name="Ignore Select" value="N" id="select" />
+<input id="O" type="button" class="green" name="Ignore Select" value="O" id="select" />
+<input id="P" type="button" class="green" name="Ignore Select" value="P" id="select" />
+<input id="Q" type="button" class="green" name="Ignore Select" value="Q" id="select" />
+<input id="R" type="button" class="green" name="Ignore Select" value="R" id="select" />
+<input id="S" type="button" class="green" name="Ignore Select" value="S" id="select" />
+<input id="T" type="button" class="green" name="Ignore Select" value="T" id="select" />
+<input id="U" ype="button" class="green" name="Ignore Select" value="U" id="select" />
+<input id="V" ype="button" class="green" name="Ignore Select" value="V" id="select" />
+<input id="W" ype="button" class="green" name="Ignore Select" value="W" id="select" />
+<input id="X" ype="button" class="green" name="Ignore Select" value="X" id="select" />
+
+<input id="query" type="button" class="blue" name="Ignore Select" value="query" id="select" />
+
+<script>
+  $(":button").on('click', function () {
+    var gValue = $(this).attr('class');
+    var val = $(this).attr('value');
+    console.log("cliked on: " + val);
+    if ($(this).disabled)
+    {
+      console.log('dis');
+      return;
+    }
+    // if (gValue == 'green') {
+    //   $(this).removeClass("green");
+    //   $(this).addClass("red");
+    // }
+    // else {
+    //   $(this).removeClass("red");
+    //   $(this).addClass("green");
+    // }
+    $.ajax({
+      url: '/query',
+      data: { q: val },
+      type: 'GET',
+      success: function (response) {
+        response = response.replace('\r\n', "");
+        console.log("response: " + JSON.stringify(response));
+        if (Number.isInteger(Number(response))) {
+          var num = Number(response);
+          var bin = num.toString(2);
+          bin = bin.slice(-24); //LSB 24 lockers
+          bin = bin.split("").reverse().join("");
+          var i;
+          for (i = 0; i < bin.length; i++) {
+
+            var e_id = String.fromCharCode(i + 65);
+            console.log(i + ' ' + bin[i] + ' ' + e_id);
+            var obj = document.getElementById(e_id);
+            if (bin[i] === "1") // locker is in open condition, need to be red
+            {
+              $(obj).disabled = true;              
+              $(obj).removeClass("green yellow");
+              $(obj).addClass("red");
+            }
+            else {
+              $(obj).disabled = true;
+              $(obj).removeClass("red yellow");
+              $(obj).addClass("green");
+            }
+          }
+        }
+
+        else {
+          var obj = document.getElementById(response);
+
+          if (gValue == 'green') {
+            $(obj).removeClass("green");
+            $(obj).addClass("yellow");
+          }
+
+        }
+
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  });
+</script> {%endblock%}
